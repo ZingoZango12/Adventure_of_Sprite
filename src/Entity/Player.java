@@ -24,18 +24,20 @@ public class Player extends Entity {
     int spriteCounter = 0;
     int spriteNum = 1;
 
-    public Player(GamePanel gp, KeyHandler keyIN){
+    public Player(GamePanel gp, KeyHandler keyIN) {
         this.gp = gp;
         this.keyIn = keyIN;
 
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
+        solidArea = new Rectangle(8, 16, 32, 32);
 
         setDefaultValues();
         getPlayerImage();
     }
-    public void setDefaultValues(){
+
+    public void setDefaultValues() {
 
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
@@ -43,9 +45,10 @@ public class Player extends Entity {
         direction = "down"; // sets default pos of character to down
 
     }
-    public void getPlayerImage(){
 
-        try{
+    public void getPlayerImage() {
+
+        try {
             up1 = ImageIO.read(getClass().getResourceAsStream("/Player/player_up1.png"));
             up2 = ImageIO.read(getClass().getResourceAsStream("/Player/player_up2.png"));
             up3 = ImageIO.read(getClass().getResourceAsStream("/Player/player_up3.png"));
@@ -66,41 +69,54 @@ public class Player extends Entity {
             e.printStackTrace();
         }
     }
-    public void update(){
-        boolean moving = false; 
 
-        if (keyIn.upPressed){
+    public void update() {
+
+        if (keyIn.upPressed) {
             direction = "up";
-            worldY -= speed;
-            moving = true;
-        }
-        else if (keyIn.downPressed){
+        } else if (keyIn.downPressed) {
             direction = "down";
-            worldY += speed;
-            moving = true;
-        }
-        else if (keyIn.leftPressed){
+        } else if (keyIn.leftPressed) {
             direction = "left";
-            worldX -= speed;
-            moving = true;
-        }
-        else if (keyIn.rightPressed){
+        } else if (keyIn.rightPressed) {
             direction = "right";
-            worldX += speed;
-            moving = true;
         }
 
-        if(moving){
-            spriteCounter++;
-            if(spriteCounter > 10) {
-                spriteNum = (spriteNum % 3 ) + 1;
+        collisionOn = false;
+        gp.colChecker.checkTile(this);
+        boolean moving = false;
+        if (collisionOn == false) {
+            switch (direction) {
+                case "up":
+                    moving = true;
+                    worldY -= speed;
+                    break;
+                case "down":
+                    worldY += speed;
+                    moving = true;
+                    break;
+                case "left":
+                    worldX -= speed;
+                    moving = true;
+                    break;
+                case "right":
+                    worldX += speed;
+                    moving = true;
+                    break;
+            }
+        }
+        spriteCounter++;
+        if (moving){
+            if (spriteCounter > 10) {
+                spriteNum = (spriteNum % 3) + 1;
                 spriteCounter = 0;
             }
-        } else {
-            spriteNum = 1;
-        }
+    } else
 
+    {
+        spriteNum = 1;
     }
+}
     public void draw(Graphics2D g2){
         BufferedImage image = null;
 
